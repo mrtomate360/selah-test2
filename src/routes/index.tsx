@@ -1,265 +1,163 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { useForceLightMode } from "@/hooks/use-theme";
-import { Card, CardContent } from "@/components/ui/card";
-import { Stage, Layer, Circle, Group, Image as KonvaImage, Transformer } from "react-konva";
-import useImage from "@/hooks/use-konva-image";
-import landing1Asset from "@/assets/landing-1.jpeg.asset.json";
-import landing2Asset from "@/assets/landing-2.jpeg.asset.json";
-import landing3Asset from "@/assets/landing-3.jpeg.asset.json";
-import landing4Asset from "@/assets/landing-4.jpeg.asset.json";
-import landing5Asset from "@/assets/landing-5.jpeg.asset.json";
-import landing6Asset from "@/assets/landing-6.jpeg.asset.json";
-import landing7Asset from "@/assets/landing-7.jpg.asset.json";
-import landing8Asset from "@/assets/landing-8.jpeg.asset.json";
-import landing9Asset from "@/assets/landing-9.jpeg.asset.json";
-import landing10Asset from "@/assets/landing-10.jpeg.asset.json";
-import landing11Asset from "@/assets/landing-11.jpeg.asset.json";
-import landing12Asset from "@/assets/landing-12.jpeg.asset.json";
-import landing13Asset from "@/assets/landing-13.jpeg.asset.json";
+import { ArrowRight } from "lucide-react";
+
+import embroidery from "@/assets/embroidery.jpg";
+import hero from "@/assets/hero.jpg";
+import { Newsletter } from "@/components/Newsletter";
+import { ProductCard } from "@/components/ProductCard";
+import { CATEGORIES, PRODUCTS } from "@/lib/catalog";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  component: LandingPage,
-  head: () => ({
-    meta: [
-      { title: "Inspo — Visual Mood Boards" },
-      { name: "description", content: "Collect, organize, and share visual inspiration on a spatial canvas." },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "Inspo — Visual Mood Boards" },
-      {
-        property: "og:description",
-        content: "Collect, organize, and share visual inspiration on a spatial canvas.",
-      },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Inspo — Visual Mood Boards" },
-      {
-        name: "twitter:description",
-        content: "Collect, organize, and share visual inspiration on a spatial canvas.",
-      },
-    ],
-  }),
+  head: () =>
+    seo(
+      "SELAH — Wear your faith",
+      "Ropa cristiana contemporánea: prendas minimalistas con bordados sutiles y referencias bíblicas. Faith in every detail.",
+    ),
+  component: Home,
 });
 
-// Images scattered around the edges, leaving the centre clear for the title
-const DEMO_IMAGES = [
-  { id: "1", url: landing1Asset.url, x: -742, y: -368, width: 260, height: 260 },
-  { id: "2", url: landing2Asset.url, x: 78, y: -481, width: 317, height: 461 },
-  { id: "3", url: landing3Asset.url, x: -393, y: -600, width: 321, height: 409 },
-  { id: "4", url: landing4Asset.url, x: -203, y: 207, width: 333, height: 444 },
-  { id: "5", url: landing5Asset.url, x: -678, y: 20, width: 307, height: 307 },
-  { id: "6", url: landing6Asset.url, x: 478, y: -350, width: 318, height: 450 },
-  { id: "7", url: landing7Asset.url, x: 312, y: 163, width: 233, height: 373 },
-  { id: "8", url: landing8Asset.url, x: -1235, y: -659, width: 370, height: 370 },
-  { id: "9", url: landing9Asset.url, x: 609, y: -749, width: 314, height: 314 },
-  { id: "10", url: landing10Asset.url, x: -937, y: 416, width: 432, height: 432 },
-  { id: "11", url: landing11Asset.url, x: 775, y: 434, width: 250, height: 330 },
-  { id: "12", url: landing12Asset.url, x: -1263, y: -187, width: 319, height: 473 },
-  { id: "13", url: landing13Asset.url, x: 926, y: -158, width: 240, height: 400 },
+const PRINCIPLES = [
+  { n: "01", title: "Sutil, no ruidoso", text: "Un bordado pequeño dice más que un estampado grande. La fe se lleva cerca, no a gritos." },
+  { n: "02", title: "Hecho para durar", text: "Algodones gruesos, costuras cuidadas y colores que envejecen bien con el tiempo." },
+  { n: "03", title: "Con sentido", text: "Cada prenda nace de un versículo o una palabra que vale la pena recordar." },
 ];
 
-function LandingPage() {
-  useForceLightMode();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<any>(null);
-  const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
-  const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
-  const [stageScale, setStageScale] = useState(1);
-  const [selectedId, setSelectedId] = useState<string | null>("1");
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      setStageSize({ width, height });
-      setStagePos({ x: width / 2, y: height / 2 });
-    });
-    ro.observe(container);
-    setStagePos({ x: container.clientWidth / 2, y: container.clientHeight / 2 });
-    setStageSize({ width: container.clientWidth, height: container.clientHeight });
-    return () => ro.disconnect();
-  }, []);
-
-  const handleWheel = useCallback((e: any) => {
-    e.evt.preventDefault();
-    const scaleBy = 1.08;
-    const stage = stageRef.current;
-    const oldScale = stage.scaleX();
-    const pointer = stage.getPointerPosition();
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    };
-    const direction = e.evt.deltaY > 0 ? -1 : 1;
-    const newScale = Math.min(Math.max(oldScale * Math.pow(scaleBy, direction), 0.8), 2);
-    setStageScale(newScale);
-    setStagePos({
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    });
-  }, []);
-
-  const handleStageClick = (e: any) => {
-    if (e.target === e.target.getStage() || e.target.attrs.name === "dot-grid") {
-      setSelectedId(null);
-    }
-  };
-
-  return (
-    <div ref={containerRef} className="relative h-screen w-screen overflow-hidden bg-background">
-      {/* Central card overlay */}
-      <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center">
-        <Card className="pointer-events-auto border-border/50 bg-card/90 backdrop-blur-md shadow-lg">
-          <CardContent className="flex flex-col items-center gap-4 px-12 py-10">
-            <h1 className="select-none text-[clamp(2.5rem,8vw,6rem)] font-semibold leading-none tracking-tighter text-foreground/90">
-              Inspo
-            </h1>
-            <p className="select-none text-xl font-medium tracking-tight text-foreground md:text-2xl">
-              Your visual thinking space.
-            </p>
-            <Link
-              to="/signup"
-              className="mt-2 rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-            >
-              Get Started
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Interactive Konva canvas */}
-      <Stage
-        ref={stageRef}
-        width={stageSize.width}
-        height={stageSize.height}
-        scaleX={stageScale}
-        scaleY={stageScale}
-        x={stagePos.x}
-        y={stagePos.y}
-        draggable
-        onWheel={handleWheel}
-        onClick={handleStageClick}
-        onTap={handleStageClick}
-        onDragEnd={(e) => {
-          if (e.target === stageRef.current) {
-            setStagePos({ x: e.target.x(), y: e.target.y() });
-          }
-        }}
-      >
-        <Layer>
-          <LandingDotGrid stagePos={stagePos} stageScale={stageScale} stageSize={stageSize} />
-        </Layer>
-        <Layer>
-          {DEMO_IMAGES.map((img) => (
-            <DemoImage
-              key={img.id}
-              item={img}
-              isSelected={selectedId === img.id}
-              onSelect={() => setSelectedId(img.id)}
-            />
-          ))}
-        </Layer>
-      </Stage>
-    </div>
-  );
-}
-
-function DemoImage({ item, isSelected, onSelect }: {
-  item: typeof DEMO_IMAGES[number];
-  isSelected: boolean;
-  onSelect: () => void;
-}) {
-  const [image] = useImage(item.url, "anonymous");
-  const [pos, setPos] = useState({ x: item.x, y: item.y });
-  const [size, setSize] = useState({ width: item.width, height: item.height });
-  const shapeRef = useRef<any>(null);
-  const trRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current.getLayer()?.batchDraw();
-    }
-  }, [isSelected, image]);
-
-  if (!image) return null;
-
+function Home() {
+  const best = PRODUCTS.filter((p) => p.bestSeller).slice(0, 4);
   return (
     <>
-      <KonvaImage
-        ref={shapeRef}
-        image={image}
-        x={pos.x}
-        y={pos.y}
-        width={size.width}
-        height={size.height}
-        draggable
-        cornerRadius={12}
-        shadowColor="rgba(0,0,0,0.12)"
-        shadowBlur={12}
-        shadowOffsetY={4}
-        onClick={onSelect}
-        onTap={onSelect}
-        onDragEnd={(e) => {
-          const newPos = { x: e.target.x(), y: e.target.y() };
-          setPos(newPos);
-        }}
-        onTransformEnd={() => {
-          const node = shapeRef.current;
-          if (!node) return;
-          const scaleX = node.scaleX();
-          const scaleY = node.scaleY();
-          node.scaleX(1);
-          node.scaleY(1);
-          const newPos = { x: node.x(), y: node.y() };
-          const newSize = {
-            width: Math.max(50, node.width() * scaleX),
-            height: Math.max(50, node.height() * scaleY),
-          };
-          setPos(newPos);
-          setSize(newSize);
-        }}
-      />
-      {isSelected && (
-        <Transformer
-          ref={trRef}
-          rotateEnabled={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < 50 || newBox.height < 50) return oldBox;
-            return newBox;
-          }}
-          borderStroke="oklch(0.55 0.22 264)"
-          anchorStroke="oklch(0.55 0.22 264)"
-          anchorFill="#fff"
-          anchorSize={8}
-          anchorCornerRadius={2}
-        />
-      )}
+      {/* Hero */}
+      <section className="relative">
+        <div className="relative h-[62vh] md:h-[calc(100vh-7rem)] md:min-h-[36rem]">
+          <img src={hero} alt="Dos personas con prendas SELAH en una habitación con luz natural" className="absolute inset-0 size-full object-cover object-[70%_center]" />
+          <div className="absolute inset-0 hidden md:block" style={{ backgroundImage: "var(--gradient-hero)" }} />
+        </div>
+        <div className="page py-12 md:absolute md:inset-0 md:flex md:items-center md:py-0">
+          <div className="max-w-xl">
+            <p className="eyebrow rise text-muted-foreground md:text-foreground/70">Colección Quietud · 2026</p>
+            <h1 className="rise mt-5 text-6xl italic md:text-8xl lg:text-9xl" style={{ animationDelay: "120ms" }}>
+              Wear your faith
+            </h1>
+            <p className="rise mt-6 max-w-sm text-lg leading-relaxed" style={{ animationDelay: "240ms" }}>
+              Prendas minimalistas, bordadas con intención. Faith in every detail.
+            </p>
+            <div className="rise mt-9 flex flex-wrap gap-3" style={{ animationDelay: "360ms" }}>
+              <Link to="/shop" className="btn btn-solid">
+                Ver la tienda
+              </Link>
+              <a href="#filosofia" className="btn btn-line">
+                Nuestra filosofía
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Intro */}
+      <section className="page py-24 text-center md:py-36">
+        <p className="eyebrow text-muted-foreground">Selah · סֶלָה</p>
+        <p className="mx-auto mt-8 max-w-4xl font-serif text-3xl leading-snug md:text-5xl md:leading-[1.2]">
+          En los Salmos, <em>selah</em> es una pausa: detenerse, respirar y considerar. Hacemos ropa para
+          llevar esa pausa contigo, en lo cotidiano.
+        </p>
+      </section>
+
+      {/* Collections */}
+      <section className="page pb-24 md:pb-36">
+        <div className="flex items-end justify-between gap-6">
+          <div>
+            <p className="eyebrow text-muted-foreground">Colecciones</p>
+            <h2 className="mt-3 text-4xl md:text-6xl">Por categoría</h2>
+          </div>
+          <Link to="/shop" className="eyebrow link-line hidden items-center gap-2 sm:inline-flex">
+            Ver todo <ArrowRight className="size-3.5" strokeWidth={1.25} />
+          </Link>
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-4 md:mt-14 md:gap-6 lg:grid-cols-4">
+          {CATEGORIES.map((c, i) => (
+            <Link
+              key={c.slug}
+              to="/shop"
+              search={{ category: c.slug }}
+              className={`group block ${i % 2 === 1 ? "lg:mt-16" : ""}`}
+            >
+              <div className="aspect-[3/4] overflow-hidden bg-card">
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                />
+              </div>
+              <h3 className="mt-4 text-2xl md:text-3xl">{c.name}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{c.blurb}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Best sellers */}
+      <section className="bg-card">
+        <div className="page py-24 md:py-32">
+          <div className="text-center">
+            <p className="eyebrow text-muted-foreground">Los más queridos</p>
+            <h2 className="mt-3 text-4xl md:text-6xl">Más vendidos</h2>
+          </div>
+          <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-16 md:gap-x-6 lg:grid-cols-4">
+            {best.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+          <div className="mt-14 text-center">
+            <Link to="/shop" className="btn btn-line">
+              Ver toda la tienda
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Philosophy */}
+      <section id="filosofia" className="scroll-mt-28 bg-secondary">
+        <div className="grid lg:grid-cols-2">
+          <div className="aspect-[4/5] lg:aspect-auto">
+            <img src={embroidery} alt="Manos terminando un bordado sobre algodón marfil" loading="lazy" className="size-full object-cover" />
+          </div>
+          <div className="flex items-center px-5 py-20 md:px-16 md:py-28">
+            <div className="max-w-lg">
+              <p className="eyebrow text-foreground/70">Filosofía</p>
+              <h2 className="mt-4 text-5xl md:text-7xl">
+                Faith in <em>every</em> detail.
+              </h2>
+              <p className="mt-6 leading-relaxed">
+                Creemos que la fe no necesita adornos. Por eso diseñamos prendas serenas, donde el mensaje
+                está en lo pequeño: una puntada, una referencia, una palabra.
+              </p>
+              <ol className="mt-10 space-y-7">
+                {PRINCIPLES.map((p) => (
+                  <li key={p.n} className="grid grid-cols-[2.5rem_1fr] gap-4 border-t border-foreground/20 pt-6">
+                    <span className="font-serif text-xl italic">{p.n}</span>
+                    <div>
+                      <h3 className="text-2xl">{p.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-foreground/80">{p.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Verse */}
+      <section className="page py-24 text-center md:py-36">
+        <blockquote className="mx-auto max-w-3xl font-serif text-4xl italic leading-tight md:text-6xl">
+          «Estad quietos, y conoced que yo soy Dios.»
+        </blockquote>
+        <p className="eyebrow mt-8 text-muted-foreground">Salmo 46:10</p>
+      </section>
+
+      <Newsletter />
     </>
-  );
-}
-
-function LandingDotGrid({ stagePos, stageScale, stageSize }: { stagePos: { x: number; y: number }; stageScale: number; stageSize: { width: number; height: number } }) {
-  const dots = useMemo(() => {
-    const spacing = 32;
-    const result: { x: number; y: number }[] = [];
-    const startX = Math.floor(-stagePos.x / stageScale / spacing) * spacing - spacing;
-    const startY = Math.floor(-stagePos.y / stageScale / spacing) * spacing - spacing;
-    const endX = startX + (stageSize.width / stageScale) + spacing * 2;
-    const endY = startY + (stageSize.height / stageScale) + spacing * 2;
-    for (let x = startX; x < endX; x += spacing) {
-      for (let y = startY; y < endY; y += spacing) {
-        result.push({ x, y });
-      }
-    }
-    return result;
-  }, [stagePos.x, stagePos.y, stageScale, stageSize.width, stageSize.height]);
-
-  return (
-    <Group name="dot-grid">
-      {dots.map((dot, i) => (
-        <Circle key={i} x={dot.x} y={dot.y} radius={1} fill="#c0c0c8" listening={false} />
-      ))}
-    </Group>
   );
 }

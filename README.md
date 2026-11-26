@@ -1,234 +1,84 @@
-# selah-test2
+# Selah Store
 
-# AI Agent Prompt
+Create a complete, modern and responsive e-commerce website for a Christian clothing brand called SELAH.
 
-## Project Overview
+BRAND IDENTITY:
 
-Inspo is a web-based visual mood board and inspiration canvas platform that serves as a centralized hub for collecting, organizing, and sharing visual references. The product addresses the fragmentation problem where creatives use multiple disconnected tools (Pinterest, Figma, Notion, screenshots, bookmarks) to gather inspiration. Inspo consolidates this workflow into a single, visual-first interface optimized for speed, flexibility, and collaboration. The platform is designed for designers, creative directors, product managers, and creative teams who need rapid inspiration capture and intuitive visual organization without the complexity of full design tools or the social overhead of Pinterest.
+Selah is a contemporary Christian clothing brand focused on minimalist apparel, subtle embroidered designs, biblical references and meaningful messages.
 
-## Core Functionality
+The brand should feel premium, peaceful, warm, elegant and contemporary. Avoid traditional religious merchandising aesthetics, excessive crosses or overly decorative Christian graphics.
 
-- **Rapid Capture System**: One-click capture from web (browser extension), direct uploads, URL imports, and screenshot integration
+VISUAL DIRECTION:
 
-- **Canvas-Based Organization**: Infinite, zoomable canvas where users arrange inspiration boards spatially with drag-and-drop functionality
+- Warm minimalist aesthetic.
 
-- **Visual Collections**: Create multiple boards/projects with custom naming, descriptions, and visual thumbnails
+- Main colors: Ivory (#E9E2D5), Sage Green (#C7D2C0), Dusty Rose (#E8D4D0), Sand (#D8C6A8), and Olive (#45483F).
 
-- **Annotation & Metadata**: Add notes, color tags, mood labels, typography references, and custom metadata to individual items
+- Elegant serif typography for headings and clean sans-serif typography for body text.
 
-- **Color Palette Extraction**: Automatic color palette generation from images with manual refinement options
+- Generous whitespace, soft natural lighting and editorial fashion photography.
 
-- **Collaborative Workspaces**: Share boards with team members, enable commenting, version history, and real-time collaboration
+- High-quality product presentation.
 
-- **Search & Discovery**: Full-text search across notes and metadata, tag-based filtering, and visual similarity search
+- Fully responsive design.
 
-- **Export & Integration**: Export boards as PDF, image, or design system specs; integration with Figma, design tools
+BRAND SLOGAN: Faith in every detail.
 
-## User Journey
+WEBSITE STRUCTURE:
 
-1. **Onboarding**: User signs up, creates first board, installs browser extension (optional)
+1. HOME PAGE: elegant SELAH navigation, editorial hero image, headline Wear your faith, brand introduction, featured collections, best sellers, philosophy, newsletter and footer.
 
-2. **Inspiration Capture**: User encounters visual inspiration while browsing; captures via extension, upload, or link
+2. SHOP: catalog, T-shirts, Hoodies, Sweatshirts and Accessories, search, filters, sorting, product cards and product details with images, sizes, colors and stock.
 
-3. **Organization**: User arranges captured items on canvas, adds notes, tags, and mood labels
+3. CART: add/remove products, quantities, totals and checkout preparation.
 
-4. **Refinement**: User groups related items, extracts color palettes, annotates design decisions
+4. CUSTOMER ACCOUNTS: registration, login, logout, password recovery, profile and order history.
 
-5. **Collaboration**: User shares board with team, receives feedback through comments and suggestions
+5. ADMIN DASHBOARD: secure administrator access, product CRUD, images, prices, categories, sizes, inventory, orders, order status and customer management.
 
-6. **Export & Application**: User exports board for design handoff, design system documentation, or stakeholder presentation
+6. CONTACT: contact form, social links and support information.
 
-7. **Iteration**: User revisits board, updates inspiration, tracks evolution of design direction
+TECHNICAL REQUIREMENTS:
 
-## Technical Requirements
+- React and TypeScript.
 
-- **Frontend**: React/Next.js with TypeScript, Tailwind CSS for styling, Canvas API or Konva.js for spatial canvas rendering
+- Supabase database and authentication.
 
-- **Backend**: Node.js/Express or Python/FastAPI with PostgreSQL for relational data, Redis for real-time features
+- Secure role-based access for administrators and customers.
 
-- **Image Processing**: Sharp or ImageMagick for thumbnail generation, color extraction (color-thief or similar)
+- Database prepared for products, variants, inventory, profiles and orders.
 
-- **Storage**: AWS S3 or equivalent for image storage with CDN distribution
+- Row Level Security policies.
 
-- **Authentication**: OAuth 2.0 (Google, GitHub, Apple), JWT tokens, session management
+- Prepare Mercado Pago Checkout Pro integration for Chile.
 
-- **Real-Time**: WebSocket implementation for collaborative features, operational transformation or CRDT for conflict resolution
+- Keep payment credentials and sensitive operations on the server.
 
-- **Browser Extension**: Manifest V3 compatible extension for Chrome, Firefox, Safari
+- Reusable components and clean architecture.
 
-- **Performance**: Target <2s initial load, <500ms capture-to-canvas, <1s search results
+INITIAL PRODUCTS:
 
-- **Scalability**: Horizontal scaling with load balancing, database connection pooling, caching strategy
+- Ivory embroidered oversized hoodie.
 
-## API Integrations
+- Sage green embroidered t-shirt.
 
-- **Figma API**: Export mood boards as Figma files, sync design tokens
+- Sand-colored sweatshirt with a subtle biblical reference.
 
-- **Slack Integration**: Share board links, post board updates to channels
+- Minimalist embroidered cap.
 
-- **Google Drive/Dropbox**: Import images from cloud storage
+- Neutral canvas tote bag.
 
-- **Unsplash/Pexels API**: Optional integration for stock photo discovery
+Use realistic product photography and consistent brand styling.
 
-- **Color Palette APIs**: Integration with design system tools for color standardization
-
-- **Email**: Transactional emails for sharing, invitations, notifications
-
-- **Analytics**: Segment or Mixpanel for usage tracking and product insights
-
-## Real-Time Features
-
-- **Live Collaboration**: Multiple users editing same board simultaneously with cursor presence indicators
-
-- **Instant Notifications**: Real-time alerts for comments, shares, and board updates
-
-- **Presence Awareness**: Show which team members are currently viewing/editing a board
-
-- **Live Sync**: Changes propagate across all connected clients within 500ms
-
-- **Activity Feed**: Real-time log of board changes, comments, and collaborator actions
-
-- **Conflict Resolution**: Automatic merging of concurrent edits using operational transformation
-
-## Implementation Details
-
-- **Architecture**: Microservices with API Gateway, separate services for auth, images, collaboration, search
-
-- **Database Schema**: Users, Boards, Items (images/references), Collections, Comments, Collaborators, Tags, Metadata
-
-- **Caching Strategy**: Redis for session data, board metadata, frequently accessed collections; CDN for images
-
-- **Image Pipeline**: Upload → validation → thumbnail generation → S3 storage → CDN distribution
-
-- **Search Implementation**: Elasticsearch for full-text search across notes/metadata, vector embeddings for visual similarity (future)
-
-- **Deployment**: Docker containers, Kubernetes orchestration, CI/CD with GitHub Actions
-
-- **Monitoring**: Sentry for error tracking, DataDog for performance monitoring, custom dashboards for product metrics
-
-- **Security**: HTTPS/TLS, CORS configuration, rate limiting, input validation, SQL injection prevention, XSS protection
-
-## MVP Features
-
-- User authentication and profile management
-
-- Create, edit, delete boards/collections
-
-- Drag-and-drop canvas with infinite zoom
-
-- Upload images and add URLs
-
-- Browser extension for one-click capture
-
-- Basic tagging and note annotation
-
-- Share boards with read-only or edit access
-
-- Comment functionality on items
-
-- Color palette extraction from images
-
-- Search across boards and items
-
-- Export board as PDF or image
-
-- Basic real-time collaboration (live cursors, instant sync)
-
-- Mobile-responsive design (view-only on mobile MVP)
-
-## Future Features
-
-- AI-powered curation and recommendation engine
-
-- Advanced visual similarity search
-
-- Design system integration and token sync
-
-- Team workspaces with permission hierarchies
-
-- Board templates and starter kits
-
-- Mood board analytics (most-referenced colors, styles, trends)
-
-- Integration with design tools (Figma, Adobe XD, Sketch)
-
-- Mobile app with offline support
-
-- Advanced collaboration (version history, branching)
-
-- Marketplace for sharing public mood boards
-
-- AI-generated mood board suggestions based on project brief
-
-- Voice/audio annotations
-
-- 3D mood board visualization
-
-## User Experience Guidelines
-
-- **Speed First**: Every interaction should feel instant; optimize for <500ms response times
-
-- **Visual Clarity**: Large, beautiful image previews; minimize text-heavy interfaces
-
-- **Spatial Intuition**: Canvas organization should feel natural and physical, like arranging items on a table
-
-- **Minimal Friction**: Capture should be 1-2 clicks maximum; no required fields beyond image
-
-- **Collaborative Presence**: Always show who's working on a board; make collaboration feel social but not intrusive
-
-- **Accessibility**: WCAG 2.1 AA compliance, keyboard navigation, screen reader support, color contrast standards
-
-- **Responsive Design**: Seamless experience from desktop (primary) to tablet (secondary) to mobile (view-only)
-
-- **Dark/Light Modes**: Support both themes with automatic detection and manual toggle
-
-- **Onboarding**: Interactive tutorial for first-time users, empty state guidance, contextual help
-
-## Code Quality Standards
-
-- **Language**: TypeScript for type safety across frontend and backend
-
-- **Linting**: ESLint with Airbnb config, Prettier for code formatting
-
-- **Testing**: Jest for unit tests (>80% coverage), React Testing Library for component tests, Cypress for E2E tests
-
-- **Documentation**: JSDoc comments for functions, README files for modules, API documentation with Swagger/OpenAPI
-
-- **Git Workflow**: Feature branches, pull request reviews, conventional commits
-
-- **Performance**: Lighthouse scores >90, Core Web Vitals optimization, bundle size monitoring
-
-- **Security**: OWASP Top 10 compliance, regular dependency audits, security headers (CSP, X-Frame-Options, etc.)
-
-- **Code Review**: Mandatory peer review, automated checks (linting, tests, security scanning)
-
-## Deliverable Format
-
-- **Frontend Code**: React/Next.js components organized by feature, shared utilities, hooks, and context
-
-- **Backend Code**: API routes, database models, middleware, services, and controllers with clear separation of concerns
-
-- **Database Schema**: SQL migration files, ER diagrams, documentation of relationships
-
-- **API Documentation**: Swagger/OpenAPI spec with all endpoints, request/response schemas, authentication requirements
-
-- **Browser Extension**: Manifest file, content scripts, background service worker, popup UI
-
-- **Deployment Configuration**: Docker Compose for local development, Kubernetes manifests for production, environment variable documentation
-
-- **Testing Suite**: Unit tests, integration tests, E2E test scenarios with clear setup and teardown
-
-- **Product Documentation**: User guides, feature walkthroughs, FAQ, troubleshooting guide
-
-- **Design System**: Figma file with components, color palette, typography, spacing guidelines
-
-- **Analytics Dashboard**: Custom dashboard showing key metrics (DAU, capture rate, collaboration events, retention)
+IMPORTANT: First build the complete visual experience and responsive navigation. Use clearly identified demo data until Supabase is connected. Do not simulate successful real payments. The final result must look like a real premium independent fashion brand, not a generic e-commerce template.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://selah-store.lovable.app
+
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/5d9f61c2-1315-4468-a767-c1d3f292ba5e).
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/92952e75-208a-50d3-9f06-c106f9e6a6da).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
