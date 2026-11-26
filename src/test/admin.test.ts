@@ -41,4 +41,9 @@ describe("admin filters", () => {
     const orders = filterOrders(DEMO_ORDERS, { query: "Salmo 23:1-6", status: "all" });
     expect(orders.map((o) => o.id)).toEqual(["DEMO-1042"]);
   });
+
+  it("finds an order by a phrase inside its requested Bible text", () => {
+    const orders = filterOrders(DEMO_ORDERS, { query: "Confortará mi alma", status: "all" });
+    expect(orders.map((o) => o.id)).toEqual(["DEMO-1042"]);
+  });
 });

@@ -5,6 +5,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { OrderSummary } from "@/components/OrderSummary";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/catalog";
+import { formatVerseList } from "@/lib/embroidery";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/cart")({
@@ -51,6 +52,14 @@ function CartPage() {
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {line.product.embroidery.position} · {line.product.embroidery.size}
                         </p>
+                        {line.embroiderySelection && line.embroiderySelection.textVerses.length > 0 && (
+                          <p className="mt-1 text-xs leading-relaxed">
+                            Texto en los versículos {formatVerseList(line.embroiderySelection.textVerses)}
+                            <span className="block text-muted-foreground">
+                              +{formatPrice(line.textSurcharge)} por prenda
+                            </span>
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

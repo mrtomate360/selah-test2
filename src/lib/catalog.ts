@@ -276,7 +276,7 @@ export const PRODUCTS: Product[] = [
     embroidery: {
       position: "Espalda",
       size: "Grande",
-      defaultSelection: { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6 },
+      defaultSelection: { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6, textVerses: [] },
     },
   },
   {
@@ -308,7 +308,7 @@ export const PRODUCTS: Product[] = [
     embroidery: {
       position: "Pecho",
       size: "Pequeño",
-      defaultSelection: { book: "Filipenses", chapter: 4, fromVerse: 13, toVerse: 13 },
+      defaultSelection: { book: "Filipenses", chapter: 4, fromVerse: 13, toVerse: 13, textVerses: [] },
     },
   },
   {
@@ -339,7 +339,7 @@ export const PRODUCTS: Product[] = [
     embroidery: {
       position: "Manga derecha",
       size: "Pequeño",
-      defaultSelection: { book: "Josué", chapter: 1, fromVerse: 9, toVerse: 9 },
+      defaultSelection: { book: "Josué", chapter: 1, fromVerse: 9, toVerse: 9, textVerses: [] },
     },
   },
 ];

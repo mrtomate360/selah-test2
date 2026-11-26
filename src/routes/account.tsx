@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Field } from "@/components/AuthShell";
 import { DemoNotice } from "@/components/DemoNotice";
+import { EmbroideryTextDetails } from "@/components/EmbroideryTextDetails";
 import { OrderJourney } from "@/components/OrderJourney";
 import { PageHeading } from "@/components/PageHeading";
 import { formatPrice, getProductById } from "@/lib/catalog";
@@ -98,6 +99,7 @@ function Account() {
                                     <span className="block text-muted-foreground">
                                       {i.embroidery.position} · {i.embroidery.size}
                                     </span>
+                                    <EmbroideryTextDetails verses={i.embroidery.verses ?? []} />
                                   </span>
                                 )}
                               </span>

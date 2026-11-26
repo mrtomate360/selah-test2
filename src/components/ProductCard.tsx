@@ -52,7 +52,8 @@ export function ProductCard({ product }: { product: Product }) {
       {product.embroidery && (
         <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
           <BookOpen aria-hidden className="mt-0.5 size-3.5 shrink-0" strokeWidth={1.25} />
-          Referencia a tu elección · {product.embroidery.position} · {product.embroidery.size}
+          {product.embroidery.size === "Grande" ? "Referencia + texto opcional" : "Referencia a tu elección"}
+          {" · "}{product.embroidery.position} · {product.embroidery.size}
         </p>
       )}
       <div className="mt-3 flex gap-1.5">

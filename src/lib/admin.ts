@@ -65,7 +65,12 @@ export function filterOrders(
         o.id,
         o.customer,
         o.email,
-        o.items.map((i) => `${i.name} ${i.embroidery?.reference ?? ""}`).join(" "),
+        o.items
+          .map(
+            (i) =>
+              `${i.name} ${i.embroidery?.reference ?? ""} ${i.embroidery?.verses?.map((verse) => verse.text).join(" ") ?? ""}`,
+          )
+          .join(" "),
       ),
   );
 }

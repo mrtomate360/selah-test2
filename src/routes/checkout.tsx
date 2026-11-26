@@ -7,6 +7,7 @@ import { DemoNotice } from "@/components/DemoNotice";
 import { PageHeading } from "@/components/PageHeading";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/catalog";
+import { formatVerseList } from "@/lib/embroidery";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/checkout")({
@@ -82,6 +83,12 @@ function Checkout() {
                       <span className="block text-muted-foreground">
                         {l.product.embroidery.position} · {l.product.embroidery.size}
                       </span>
+                      {l.embroiderySelection && l.embroiderySelection.textVerses.length > 0 && (
+                        <span className="mt-1 block leading-relaxed">
+                          Texto: versículos {formatVerseList(l.embroiderySelection.textVerses)}
+                          <span className="block text-muted-foreground">+{formatPrice(l.textSurcharge)} por prenda</span>
+                        </span>
+                      )}
                     </span>
                   )}
                 </span>

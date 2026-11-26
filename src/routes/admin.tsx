@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import fallbackImage from "@/assets/tote.jpg";
 import { DemoNotice } from "@/components/DemoNotice";
+import { EmbroideryTextDetails } from "@/components/EmbroideryTextDetails";
 import { PageHeading } from "@/components/PageHeading";
 import {
   filterCustomers,
@@ -439,6 +440,7 @@ function Admin() {
                                 <p className="mt-0.5 text-xs">
                                   {i.embroidery.position} · {i.embroidery.size}
                                 </p>
+                                <EmbroideryTextDetails verses={i.embroidery.verses ?? []} />
                               </div>
                             )}
                           </div>

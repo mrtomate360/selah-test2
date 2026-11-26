@@ -1,6 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { getProductById, variantStock, type Product } from "@/lib/catalog";
+import {
+  embroideryTextSurcharge,
+  formatReference,
+  isValidSelection,
+  normalizeTextVerses,
+  type EmbroiderySelection,
+} from "@/lib/embroidery";
 
 export interface CartItem {
   productId: string;
@@ -8,12 +15,15 @@ export interface CartItem {
   size: string;
   quantity: number;
   embroideryReference?: string;
+  embroiderySelection?: EmbroiderySelection;
 }
 
 export interface CartLine extends CartItem {
   key: string;
   product: Product;
   stock: number;
+  unitPrice: number;
+  textSurcharge: number;
   lineTotal: number;
 }
 
@@ -21,8 +31,11 @@ export interface CartLine extends CartItem {
 export const FREE_SHIPPING_FROM = 60000;
 export const FLAT_SHIPPING = 3990;
 
-export function itemKey(item: Pick<CartItem, "productId" | "color" | "size" | "embroideryReference">): string {
-  return `${item.productId}|${item.color}|${item.size}|${item.embroideryReference ?? ""}`;
+export function itemKey(
+  item: Pick<CartItem, "productId" | "color" | "size" | "embroideryReference" | "embroiderySelection">,
+): string {
+  const textVerses = item.embroiderySelection?.textVerses.join("-") ?? "";
+  return `${item.productId}|${item.color}|${item.size}|${item.embroideryReference ?? ""}|${textVerses}`;
 }
 
 export function cartTotals(lines: Pick<CartLine, "lineTotal" | "quantity">[]) {
@@ -74,15 +87,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const product = getProductById(item.productId);
     if (!product) return;
     const stock = variantStock(product, item.color, item.size);
-    const embroideryReference = item.embroideryReference?.trim();
-    if (product.embroidery && !embroideryReference) return;
-    const normalizedItem: CartItem = {
+    let normalizedItem: CartItem = {
       productId: item.productId,
       color: item.color,
       size: item.size,
       quantity: item.quantity,
-      ...(product.embroidery && embroideryReference ? { embroideryReference } : {}),
     };
+
+    if (product.embroidery) {
+      if (!item.embroiderySelection) return;
+      const selection = {
+        ...item.embroiderySelection,
+        textVerses:
+          product.embroidery.size === "Grande"
+            ? normalizeTextVerses(item.embroiderySelection)
+            : [],
+      };
+      if (!isValidSelection(selection)) return;
+      normalizedItem = {
+        ...normalizedItem,
+        embroideryReference: formatReference(selection),
+        embroiderySelection: selection,
+      };
+    }
+
     setItems((prev) => {
       const key = itemKey(normalizedItem);
       const existing = prev.find((p) => itemKey(p) === key);
@@ -117,13 +145,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const lines = items.flatMap((item): CartLine[] => {
       const product = getProductById(item.productId);
       if (!product) return [];
+      const textSurcharge = product.embroidery
+        ? embroideryTextSurcharge(product.embroidery, item.embroiderySelection)
+        : 0;
+      const unitPrice = product.price + textSurcharge;
       return [
         {
           ...item,
           key: itemKey(item),
           product,
           stock: variantStock(product, item.color, item.size),
-          lineTotal: product.price * item.quantity,
+          unitPrice,
+          textSurcharge,
+          lineTotal: unitPrice * item.quantity,
         },
       ];
     });

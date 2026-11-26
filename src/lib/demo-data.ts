@@ -3,6 +3,8 @@
  * and admin previews until the store's database is connected.
  */
 
+import type { EmbroideredVerse } from "@/lib/embroidery";
+
 export type OrderStatus = "pending" | "paid" | "shipped" | "delivered" | "cancelled";
 
 export const ORDER_STATUSES: OrderStatus[] = ["pending", "paid", "shipped", "delivered", "cancelled"];
@@ -21,7 +23,7 @@ export interface DemoOrderItem {
   variant: string;
   quantity: number;
   price: number;
-  embroidery?: { reference: string; position: string; size: string };
+  embroidery?: { reference: string; position: string; size: string; verses?: EmbroideredVerse[] };
 }
 
 export interface DemoOrder {
@@ -58,12 +60,24 @@ export const DEMO_ORDERS: DemoOrder[] = [
         name: "Hoodie Oversize Tu Versículo",
         variant: "Marfil / M",
         quantity: 1,
-        price: 56990,
-        embroidery: { reference: "Salmo 23:1-6", position: "Espalda", size: "Grande" },
+        price: 59990,
+        embroidery: {
+          reference: "Salmo 23:1-6",
+          position: "Espalda",
+          size: "Grande",
+          verses: [
+            { verse: 1, text: "Jehová es mi pastor; nada me faltará." },
+            { verse: 3, text: "Confortará mi alma; Me guiará por sendas de justicia por amor de su nombre." },
+            {
+              verse: 6,
+              text: "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida; Y en la casa de Jehová moraré por largos días.",
+            },
+          ],
+        },
       },
       { productId: "p-tote", name: "Bolso Tote Pan de Cada Día", variant: "Natural", quantity: 1, price: 14990 },
     ],
-    total: 71980,
+    total: 74980,
     status: "shipped",
     history: { pending: "2026-11-18", paid: "2026-11-18", shipped: "2026-11-20" },
   },
@@ -110,7 +124,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
 ];
 
 export const DEMO_CUSTOMERS: DemoCustomer[] = [
-  { id: "c1", name: "Clienta Demo", email: "clienta.demo@example.com", city: "Santiago", orders: 2, spent: 120960, joined: "2026-09-30" },
+  { id: "c1", name: "Clienta Demo", email: "clienta.demo@example.com", city: "Santiago", orders: 2, spent: 123960, joined: "2026-09-30" },
   { id: "c2", name: "Comprador de Ejemplo", email: "comprador.ejemplo@example.com", city: "Valparaíso", orders: 1, spent: 53970, joined: "2026-11-01" },
   { id: "c3", name: "Compradora de Prueba", email: "compradora.prueba@example.com", city: "Concepción", orders: 1, spent: 23980, joined: "2026-10-20" },
   { id: "c4", name: "Persona de Ejemplo", email: "persona.ejemplo@example.com", city: "La Serena", orders: 1, spent: 0, joined: "2026-10-10" },

@@ -7,7 +7,7 @@ import { EmbroideryCustomizer } from "@/components/EmbroideryCustomizer";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
 import { categoryName, formatPrice, getProduct, PRODUCTS, variantStock } from "@/lib/catalog";
-import { formatReference, isValidSelection, type EmbroiderySelection } from "@/lib/embroidery";
+import { embroideryTextSurcharge, formatReference, isValidSelection, type EmbroiderySelection } from "@/lib/embroidery";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/shop/$slug")({
@@ -55,12 +55,14 @@ function ProductView({ slug }: { slug: string }) {
   const [size, setSize] = useState(product.sizes.length === 1 ? (product.sizes[0] ?? "") : "");
   const [qty, setQty] = useState(1);
   const [selection, setSelection] = useState<EmbroiderySelection>(
-    () => product.embroidery?.defaultSelection ?? { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6 },
+    () => product.embroidery?.defaultSelection ?? { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6, textVerses: [] },
   );
 
   const stock = size ? variantStock(product, color, size) : 0;
   const embroideryValid = !product.embroidery || isValidSelection(selection);
   const embroideryReference = product.embroidery && embroideryValid ? formatReference(selection) : undefined;
+  const textSurcharge = product.embroidery ? embroideryTextSurcharge(product.embroidery, selection) : 0;
+  const unitPrice = product.price + textSurcharge;
   const colorSoldOut = !firstAvailable;
   const related = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
 
@@ -77,10 +79,10 @@ function ProductView({ slug }: { slug: string }) {
       color,
       size,
       quantity: Math.min(qty, stock),
-      ...(embroideryReference ? { embroideryReference } : {}),
+      ...(product.embroidery ? { embroiderySelection: selection } : {}),
     });
     toast.success("Agregado a tu bolsa", {
-      description: `${product.name} · ${color} · ${size}${embroideryReference ? ` · ${embroideryReference}` : ""}`,
+      description: `${product.name} · ${color} · ${size}${embroideryReference ? ` · ${embroideryReference}` : ""}${selection.textVerses.length > 0 ? ` · ${selection.textVerses.length} con texto` : ""}`,
     });
   };
 
@@ -124,7 +126,12 @@ function ProductView({ slug }: { slug: string }) {
           <p className="eyebrow text-muted-foreground">{categoryName(product.category)}</p>
           <h1 className="mt-3 text-5xl md:text-6xl">{product.name}</h1>
           <p className="mt-3 font-serif text-xl italic text-muted-foreground">{product.tagline}</p>
-          <p className="mt-6 text-2xl">{formatPrice(product.price)}</p>
+          <p className="mt-6 text-2xl">{formatPrice(unitPrice)}</p>
+          {textSurcharge > 0 && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Incluye {formatPrice(textSurcharge)} por {selection.textVerses.length} {selection.textVerses.length === 1 ? "versículo" : "versículos"} con texto.
+            </p>
+          )}
           <p className="mt-6 leading-relaxed">{product.description}</p>
 
           <div className="mt-9">
