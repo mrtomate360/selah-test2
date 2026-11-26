@@ -24,6 +24,18 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Inspo — Visual Mood Boards" },
       { name: "description", content: "Collect, organize, and share visual inspiration on a spatial canvas." },
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: "Inspo — Visual Mood Boards" },
+      {
+        property: "og:description",
+        content: "Collect, organize, and share visual inspiration on a spatial canvas.",
+      },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Inspo — Visual Mood Boards" },
+      {
+        name: "twitter:description",
+        content: "Collect, organize, and share visual inspiration on a spatial canvas.",
+      },
     ],
   }),
 });
@@ -53,22 +65,6 @@ function LandingPage() {
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
   const [stageScale, setStageScale] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>("1");
-  const positionsRef = useRef<Record<string, { x: number; y: number; width: number; height: number }>>({});
-
-  const handleItemUpdate = useCallback((id: string, x: number, y: number, width: number, height: number) => {
-    positionsRef.current[id] = { x: Math.round(x), y: Math.round(y), width: Math.round(width), height: Math.round(height) };
-  }, []);
-
-  const copyPositions = useCallback(() => {
-    const result = DEMO_IMAGES.map((img) => {
-      const override = positionsRef.current[img.id];
-      return override
-        ? { id: img.id, x: override.x, y: override.y, width: override.width, height: override.height }
-        : { id: img.id, x: img.x, y: img.y, width: img.width, height: img.height };
-    });
-    navigator.clipboard.writeText(JSON.stringify(result, null, 2));
-  }, []);
-  
 
   useEffect(() => {
     const container = containerRef.current;
@@ -111,14 +107,6 @@ function LandingPage() {
 
   return (
     <div ref={containerRef} className="relative h-screen w-screen overflow-hidden bg-background">
-      {/* Dev: copy positions */}
-      <button
-        onClick={copyPositions}
-        className="absolute bottom-4 right-4 z-30 rounded bg-black/80 px-3 py-1.5 text-xs text-white hover:bg-black"
-      >
-        Copy positions
-      </button>
-
       {/* Central card overlay */}
       <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center">
         <Card className="pointer-events-auto border-border/50 bg-card/90 backdrop-blur-md shadow-lg">
@@ -168,7 +156,6 @@ function LandingPage() {
               item={img}
               isSelected={selectedId === img.id}
               onSelect={() => setSelectedId(img.id)}
-              onUpdate={handleItemUpdate}
             />
           ))}
         </Layer>
@@ -177,11 +164,10 @@ function LandingPage() {
   );
 }
 
-function DemoImage({ item, isSelected, onSelect, onUpdate }: {
+function DemoImage({ item, isSelected, onSelect }: {
   item: typeof DEMO_IMAGES[number];
   isSelected: boolean;
   onSelect: () => void;
-  onUpdate?: (id: string, x: number, y: number, width: number, height: number) => void;
 }) {
   const [image] = useImage(item.url, "anonymous");
   const [pos, setPos] = useState({ x: item.x, y: item.y });
@@ -217,7 +203,6 @@ function DemoImage({ item, isSelected, onSelect, onUpdate }: {
         onDragEnd={(e) => {
           const newPos = { x: e.target.x(), y: e.target.y() };
           setPos(newPos);
-          onUpdate?.(item.id, newPos.x, newPos.y, size.width, size.height);
         }}
         onTransformEnd={() => {
           const node = shapeRef.current;
@@ -233,7 +218,6 @@ function DemoImage({ item, isSelected, onSelect, onUpdate }: {
           };
           setPos(newPos);
           setSize(newSize);
-          onUpdate?.(item.id, newPos.x, newPos.y, newSize.width, newSize.height);
         }}
       />
       {isSelected && (
