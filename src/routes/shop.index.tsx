@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Search, X } from "lucide-react";
+import { BookOpen, Search, X } from "lucide-react";
 
 import { PageHeading } from "@/components/PageHeading";
 import { ProductCard } from "@/components/ProductCard";
@@ -22,6 +22,7 @@ interface ShopSearch {
   sort?: Sort;
   max?: number;
   stock?: boolean;
+  personalized?: boolean;
 }
 
 type ShopPatch = { [K in keyof ShopSearch]?: ShopSearch[K] | undefined };
@@ -33,6 +34,7 @@ function clean(input: ShopPatch): ShopSearch {
   if (input.sort && input.sort !== "featured") out.sort = input.sort;
   if (input.max) out.max = input.max;
   if (input.stock) out.stock = true;
+  if (input.personalized) out.personalized = true;
   return out;
 }
 
@@ -47,12 +49,13 @@ export const Route = createFileRoute("/shop/")({
     const max = PRICE_CAPS.find((x) => x === Number(s["max"]));
     if (max) patch.max = max;
     if (s["stock"] === true || s["stock"] === "true") patch.stock = true;
+    if (s["personalized"] === true || s["personalized"] === "true") patch.personalized = true;
     return clean(patch);
   },
   head: () =>
     seo(
       "Tienda — SELAH",
-      "Poleras, hoodies, polerones y accesorios SELAH: ropa cristiana minimalista con bordados sutiles.",
+      "Poleras, hoodies, polerones y accesorios SELAH: ropa cristiana minimalista con bordados sutiles y referencias personalizables.",
     ),
   component: Shop,
 });
@@ -60,6 +63,7 @@ export const Route = createFileRoute("/shop/")({
 function applyFilters(search: ShopSearch): Product[] {
   const q = search.q?.trim().toLowerCase();
   const list = PRODUCTS.filter((p) => {
+    if (search.personalized && !p.embroidery) return false;
     if (search.category && p.category !== search.category) return false;
     if (search.max && p.price > search.max) return false;
     if (search.stock && totalStock(p) === 0) return false;
@@ -85,32 +89,48 @@ function Shop() {
     navigate({ search: (prev) => clean({ ...prev, ...patch }), replace: true, resetScroll: false });
 
   const products = applyFilters(search);
+  const customProducts = PRODUCTS.filter((product) => product.embroidery);
   const active = CATEGORIES.find((c) => c.slug === search.category);
-  const hasFilters = Boolean(search.q || search.max || search.stock || search.category);
+  const hasFilters = Boolean(search.q || search.max || search.stock || search.category || search.personalized);
 
   return (
     <>
       <PageHeading
         eyebrow="Tienda"
-        title={active ? active.name : "Toda la colección"}
-        lead={active ? active.blurb : "Prendas serenas, bordadas con intención."}
+        title={search.personalized ? "Tu versículo" : active ? active.name : "Toda la colección"}
+        lead={
+          search.personalized
+            ? "Elige una prenda y borda la referencia bíblica que quieras llevar, sin costo adicional."
+            : active
+              ? active.blurb
+              : "Prendas serenas, bordadas con intención."
+        }
       />
 
       <div className="page pb-24 md:pb-32">
         <nav className="flex gap-6 overflow-x-auto border-b border-border pb-4 md:justify-center md:gap-10" aria-label="Categorías">
           <button
             type="button"
-            onClick={() => update({ category: undefined })}
-            data-status={search.category ? undefined : "active"}
+            onClick={() => update({ category: undefined, personalized: undefined })}
+            data-status={!search.category && !search.personalized ? "active" : undefined}
             className="eyebrow link-line shrink-0"
           >
             Todo
+          </button>
+          <button
+            type="button"
+            onClick={() => update({ category: undefined, personalized: true })}
+            data-status={search.personalized ? "active" : undefined}
+            className="eyebrow link-line inline-flex shrink-0 items-center gap-2"
+          >
+            <BookOpen aria-hidden className="size-3.5" strokeWidth={1.25} />
+            Tu versículo
           </button>
           {CATEGORIES.map((c) => (
             <button
               key={c.slug}
               type="button"
-              onClick={() => update({ category: c.slug })}
+              onClick={() => update({ category: c.slug, personalized: undefined })}
               data-status={search.category === c.slug ? "active" : undefined}
               className="eyebrow link-line shrink-0"
             >
@@ -119,7 +139,29 @@ function Shop() {
           ))}
         </nav>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto_auto_auto] md:items-end md:gap-8">
+        {!hasFilters && (
+          <section className="mt-10 border-y border-border py-10 md:py-14" aria-labelledby="custom-collection-title">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+                <p className="eyebrow text-muted-foreground">Personalización incluida</p>
+                <h2 id="custom-collection-title" className="mt-3 text-4xl md:text-5xl">Una referencia que sea tuya</h2>
+                <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+                  Elige el libro, capítulo y versículos. Bordamos solo la referencia en la posición y el tamaño propios de cada prenda.
+                </p>
+              </div>
+              <button type="button" onClick={() => update({ personalized: true })} className="btn btn-line shrink-0 self-start md:self-auto">
+                Ver solo personalizables
+              </button>
+            </div>
+            <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-3">
+              {customProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="mt-10 grid gap-4 md:grid-cols-[1fr_auto_auto_auto] md:items-end md:gap-8">
           <label className="relative block">
             <span className="sr-only">Buscar productos</span>
             <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" strokeWidth={1.25} />

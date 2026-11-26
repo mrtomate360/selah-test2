@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { BookOpen } from "lucide-react";
 
 import { categoryName, formatPrice, totalStock, type Product } from "@/lib/catalog";
 
@@ -28,8 +29,9 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         )}
         {product.embroidery && !soldOut && (
-          <span className="eyebrow absolute right-3 top-3 bg-background/90 px-3 py-1.5 text-[0.5rem]">
-            Personalizable
+          <span className="eyebrow absolute right-3 top-3 inline-flex items-center gap-1.5 bg-primary px-3 py-1.5 text-[0.5rem] text-primary-foreground">
+            <BookOpen aria-hidden className="size-3" strokeWidth={1.5} />
+            Elige tu versículo
           </span>
         )}
         {soldOut && (
@@ -47,6 +49,12 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <p className="mt-5 shrink-0 text-sm">{formatPrice(product.price)}</p>
       </div>
+      {product.embroidery && (
+        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+          <BookOpen aria-hidden className="mt-0.5 size-3.5 shrink-0" strokeWidth={1.25} />
+          Referencia a tu elección · {product.embroidery.position} · {product.embroidery.size}
+        </p>
+      )}
       <div className="mt-3 flex gap-1.5">
         {product.colors.map((c) => (
           <span

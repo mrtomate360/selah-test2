@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
 
+import logo from "@/assets/selah-logo.svg.asset.json";
 import { useCart } from "@/lib/cart";
 import { CATEGORIES } from "@/lib/catalog";
 
@@ -49,12 +50,8 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        <Link
-          to="/"
-          className="font-serif text-2xl tracking-[0.42em] md:text-3xl"
-          aria-label="SELAH, inicio"
-        >
-          <span className="pl-[0.42em]">SELAH</span>
+        <Link to="/" className="flex items-center justify-center" aria-label="SELAH, inicio">
+          <img src={logo.url} alt="SELAH" className="h-12 w-auto md:h-16" />
         </Link>
 
         <div className="flex items-center justify-end gap-1 md:gap-5">
@@ -83,7 +80,9 @@ export function SiteHeader() {
             className="fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-sm flex-col border-r border-border bg-background shadow-2xl ease-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:duration-500 data-[state=open]:slide-in-from-left focus:outline-none xl:hidden"
           >
             <div className="flex h-16 items-center justify-between px-6 md:h-20 md:px-8">
-              <Dialog.Title className="font-serif text-2xl tracking-[0.42em]">SELAH</Dialog.Title>
+              <Dialog.Title className="flex items-center">
+                <img src={logo.url} alt="SELAH" className="h-12 w-auto" />
+              </Dialog.Title>
               <Dialog.Close className="-mr-2 p-2" aria-label="Cerrar menú">
                 <X className="size-5" strokeWidth={1.25} />
               </Dialog.Close>

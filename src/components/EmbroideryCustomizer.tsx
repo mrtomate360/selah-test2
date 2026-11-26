@@ -4,6 +4,7 @@ import {
   BIBLE_BOOKS,
   formatReference,
   isValidSelection,
+  verseCount,
   type EmbroideryConfig,
   type EmbroiderySelection,
 } from "@/lib/embroidery";
@@ -16,10 +17,16 @@ interface EmbroideryCustomizerProps {
 
 export function EmbroideryCustomizer({ config, value, onChange }: EmbroideryCustomizerProps) {
   const selectedBook = BIBLE_BOOKS.find((book) => book.name === value.book) ?? BIBLE_BOOKS[0];
+  const availableVerses = verseCount(value.book, value.chapter);
   const valid = isValidSelection(value);
 
   const updateNumber = (field: "chapter" | "fromVerse" | "toVerse", raw: string) => {
-    onChange({ ...value, [field]: Number(raw) });
+    const number = Number(raw);
+    if (field === "chapter") {
+      onChange({ ...value, chapter: number, fromVerse: 1, toVerse: 1 });
+      return;
+    }
+    onChange({ ...value, [field]: number });
   };
 
   return (
@@ -48,8 +55,9 @@ export function EmbroideryCustomizer({ config, value, onChange }: EmbroideryCust
           <span className="eyebrow mb-1.5 block text-[0.5625rem] text-muted-foreground">Libro</span>
           <select
             className="field-box"
+            aria-label="Libro"
             value={value.book}
-            onChange={(event) => onChange({ ...value, book: event.target.value, chapter: 1 })}
+            onChange={(event) => onChange({ book: event.target.value, chapter: 1, fromVerse: 1, toVerse: 1 })}
           >
             {BIBLE_BOOKS.map((book) => (
               <option key={book.name} value={book.name}>{book.name}</option>
@@ -60,9 +68,10 @@ export function EmbroideryCustomizer({ config, value, onChange }: EmbroideryCust
           <span className="eyebrow mb-1.5 block text-[0.5625rem] text-muted-foreground">Capítulo</span>
           <input
             className="field-box"
+            aria-label="Capítulo"
             type="number"
             min={1}
-            max={selectedBook.chapters}
+            max={selectedBook?.chapters ?? 1}
             value={Number.isNaN(value.chapter) ? "" : value.chapter}
             onChange={(event) => updateNumber("chapter", event.target.value)}
           />
@@ -72,9 +81,10 @@ export function EmbroideryCustomizer({ config, value, onChange }: EmbroideryCust
             <span className="eyebrow mb-1.5 block text-[0.5625rem] text-muted-foreground">Desde</span>
             <input
               className="field-box"
+              aria-label="Desde"
               type="number"
               min={1}
-              max={176}
+              max={availableVerses || 1}
               value={Number.isNaN(value.fromVerse) ? "" : value.fromVerse}
               onChange={(event) => updateNumber("fromVerse", event.target.value)}
             />
@@ -83,15 +93,22 @@ export function EmbroideryCustomizer({ config, value, onChange }: EmbroideryCust
             <span className="eyebrow mb-1.5 block text-[0.5625rem] text-muted-foreground">Hasta</span>
             <input
               className="field-box"
+              aria-label="Hasta"
               type="number"
               min={value.fromVerse || 1}
-              max={176}
+              max={availableVerses || 1}
               value={Number.isNaN(value.toVerse) ? "" : value.toVerse}
               onChange={(event) => updateNumber("toVerse", event.target.value)}
             />
           </label>
         </div>
       </div>
+
+      <p className="mt-3 text-xs text-muted-foreground" aria-live="polite">
+        {availableVerses > 0
+          ? `${value.book} ${value.chapter} tiene ${availableVerses} ${availableVerses === 1 ? "versículo" : "versículos"}.`
+          : `Ese capítulo no existe en ${value.book}.`}
+      </p>
 
       <div className="mt-5 border-l-2 border-primary pl-4" aria-live="polite">
         <p className="eyebrow text-[0.5625rem] text-muted-foreground">Se bordará</p>

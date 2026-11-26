@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
+import logo from "@/assets/selah-logo.svg.asset.json";
 import { CATEGORIES } from "@/lib/catalog";
 
 export const SOCIALS = [
@@ -13,7 +14,21 @@ export function SiteFooter() {
     <footer className="bg-primary text-primary-foreground">
       <div className="page grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:py-24">
         <div>
-          <p className="font-serif text-4xl tracking-[0.42em]">SELAH</p>
+          <span
+            role="img"
+            aria-label="SELAH"
+            className="block h-24 w-20 bg-primary-foreground"
+            style={{
+              WebkitMaskImage: `url("${logo.url}")`,
+              maskImage: `url("${logo.url}")`,
+              WebkitMaskPosition: "left center",
+              maskPosition: "left center",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+            }}
+          />
           <p className="mt-5 font-serif text-xl italic opacity-80">Faith in every detail.</p>
           <p className="mt-6 max-w-xs text-sm leading-relaxed opacity-70">
             Ropa cristiana contemporánea. Prendas minimalistas, bordados sutiles y mensajes con sentido.

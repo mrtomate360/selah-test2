@@ -1,3 +1,5 @@
+import { BIBLE_VERSE_COUNTS } from "@/lib/bible-data";
+
 export interface EmbroiderySelection {
   book: string;
   chapter: number;
@@ -11,75 +13,16 @@ export interface EmbroideryConfig {
   defaultSelection: EmbroiderySelection;
 }
 
-/** Protestant canon, with chapter counts used to constrain the chapter picker. */
-export const BIBLE_BOOKS = [
-  { name: "Génesis", chapters: 50 },
-  { name: "Éxodo", chapters: 40 },
-  { name: "Levítico", chapters: 27 },
-  { name: "Números", chapters: 36 },
-  { name: "Deuteronomio", chapters: 34 },
-  { name: "Josué", chapters: 24 },
-  { name: "Jueces", chapters: 21 },
-  { name: "Rut", chapters: 4 },
-  { name: "1 Samuel", chapters: 31 },
-  { name: "2 Samuel", chapters: 24 },
-  { name: "1 Reyes", chapters: 22 },
-  { name: "2 Reyes", chapters: 25 },
-  { name: "1 Crónicas", chapters: 29 },
-  { name: "2 Crónicas", chapters: 36 },
-  { name: "Esdras", chapters: 10 },
-  { name: "Nehemías", chapters: 13 },
-  { name: "Ester", chapters: 10 },
-  { name: "Job", chapters: 42 },
-  { name: "Salmos", chapters: 150 },
-  { name: "Proverbios", chapters: 31 },
-  { name: "Eclesiastés", chapters: 12 },
-  { name: "Cantares", chapters: 8 },
-  { name: "Isaías", chapters: 66 },
-  { name: "Jeremías", chapters: 52 },
-  { name: "Lamentaciones", chapters: 5 },
-  { name: "Ezequiel", chapters: 48 },
-  { name: "Daniel", chapters: 12 },
-  { name: "Oseas", chapters: 14 },
-  { name: "Joel", chapters: 3 },
-  { name: "Amós", chapters: 9 },
-  { name: "Abdías", chapters: 1 },
-  { name: "Jonás", chapters: 4 },
-  { name: "Miqueas", chapters: 7 },
-  { name: "Nahúm", chapters: 3 },
-  { name: "Habacuc", chapters: 3 },
-  { name: "Sofonías", chapters: 3 },
-  { name: "Hageo", chapters: 2 },
-  { name: "Zacarías", chapters: 14 },
-  { name: "Malaquías", chapters: 4 },
-  { name: "Mateo", chapters: 28 },
-  { name: "Marcos", chapters: 16 },
-  { name: "Lucas", chapters: 24 },
-  { name: "Juan", chapters: 21 },
-  { name: "Hechos", chapters: 28 },
-  { name: "Romanos", chapters: 16 },
-  { name: "1 Corintios", chapters: 16 },
-  { name: "2 Corintios", chapters: 13 },
-  { name: "Gálatas", chapters: 6 },
-  { name: "Efesios", chapters: 6 },
-  { name: "Filipenses", chapters: 4 },
-  { name: "Colosenses", chapters: 4 },
-  { name: "1 Tesalonicenses", chapters: 5 },
-  { name: "2 Tesalonicenses", chapters: 3 },
-  { name: "1 Timoteo", chapters: 6 },
-  { name: "2 Timoteo", chapters: 4 },
-  { name: "Tito", chapters: 3 },
-  { name: "Filemón", chapters: 1 },
-  { name: "Hebreos", chapters: 13 },
-  { name: "Santiago", chapters: 5 },
-  { name: "1 Pedro", chapters: 5 },
-  { name: "2 Pedro", chapters: 3 },
-  { name: "1 Juan", chapters: 5 },
-  { name: "2 Juan", chapters: 1 },
-  { name: "3 Juan", chapters: 1 },
-  { name: "Judas", chapters: 1 },
-  { name: "Apocalipsis", chapters: 22 },
-] as const;
+/** Protestant canon, with exact chapter counts used to constrain the picker. */
+export const BIBLE_BOOKS = Object.entries(BIBLE_VERSE_COUNTS).map(([name, chapters]) => ({
+  name,
+  chapters: chapters.length,
+}));
+
+export function verseCount(book: string, chapter: number): number {
+  if (!Number.isInteger(chapter) || chapter < 1) return 0;
+  return BIBLE_VERSE_COUNTS[book]?.[chapter - 1] ?? 0;
+}
 
 export function singularBookName(book: string): string {
   return book === "Salmos" ? "Salmo" : book;
@@ -93,16 +36,13 @@ export function formatReference(selection: EmbroiderySelection): string {
 }
 
 export function isValidSelection(selection: EmbroiderySelection): boolean {
-  const book = BIBLE_BOOKS.find((candidate) => candidate.name === selection.book);
+  const availableVerses = verseCount(selection.book, selection.chapter);
   return Boolean(
-    book &&
-      Number.isInteger(selection.chapter) &&
-      selection.chapter >= 1 &&
-      selection.chapter <= book.chapters &&
+    availableVerses &&
       Number.isInteger(selection.fromVerse) &&
       Number.isInteger(selection.toVerse) &&
       selection.fromVerse >= 1 &&
       selection.toVerse >= selection.fromVerse &&
-      selection.toVerse <= 176,
+      selection.toVerse <= availableVerses,
   );
 }
