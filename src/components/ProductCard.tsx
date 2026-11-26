@@ -12,20 +12,32 @@ export function ProductCard({ product }: { product: Product }) {
           src={product.images[0]}
           alt={product.name}
           loading="lazy"
-          className="size-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
+          className={`size-full object-cover transition-all duration-700 group-hover:scale-[1.03] ${soldOut ? "opacity-35 grayscale" : ""}`}
         />
         {second && (
           <img
             src={second}
             alt=""
             loading="lazy"
-            className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+            className={`absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 ${soldOut ? "grayscale group-hover:opacity-35" : "group-hover:opacity-100"}`}
           />
         )}
-        {(soldOut || product.isNew) && (
+        {product.isNew && !soldOut && (
           <span className="eyebrow absolute left-3 top-3 bg-background/90 px-3 py-1.5 text-[0.5625rem]">
-            {soldOut ? "Agotado" : "Nuevo"}
+            Nuevo
           </span>
+        )}
+        {product.embroidery && !soldOut && (
+          <span className="eyebrow absolute right-3 top-3 bg-background/90 px-3 py-1.5 text-[0.5rem]">
+            Personalizable
+          </span>
+        )}
+        {soldOut && (
+          <div className="absolute inset-0 grid place-items-center p-4">
+            <span className="eyebrow border border-border bg-background/95 px-6 py-4 text-xl tracking-[0.22em] md:text-2xl">
+              Agotado
+            </span>
+          </div>
         )}
       </div>
       <div className="mt-4 flex items-start justify-between gap-4">

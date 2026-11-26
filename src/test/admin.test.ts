@@ -25,7 +25,7 @@ describe("demo catalog", () => {
 
 describe("admin filters", () => {
   it("finds products by name ignoring accents and lists only sold-out ones on request", () => {
-    const byName = filterProducts(PRODUCTS, { query: "poleron", category: "all", stock: "all" });
+    const byName = filterProducts(PRODUCTS, { query: "poleron salmo", category: "all", stock: "all" });
     expect(byName.map((p) => p.id)).toEqual(["p-sweatshirt"]);
     const soldOut = filterProducts(PRODUCTS, { query: "", category: "all", stock: "out" });
     expect(soldOut.length).toBeGreaterThan(0);
@@ -35,5 +35,10 @@ describe("admin filters", () => {
   it("filters orders by status and customer", () => {
     const shipped = filterOrders(DEMO_ORDERS, { query: "clienta demo", status: "shipped" });
     expect(shipped.map((o) => o.id)).toEqual(["DEMO-1042"]);
+  });
+
+  it("finds an order by its requested Bible reference", () => {
+    const orders = filterOrders(DEMO_ORDERS, { query: "Salmo 23:1-6", status: "all" });
+    expect(orders.map((o) => o.id)).toEqual(["DEMO-1042"]);
   });
 });

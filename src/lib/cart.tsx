@@ -7,6 +7,7 @@ export interface CartItem {
   color: string;
   size: string;
   quantity: number;
+  embroideryReference?: string;
 }
 
 export interface CartLine extends CartItem {
@@ -20,8 +21,8 @@ export interface CartLine extends CartItem {
 export const FREE_SHIPPING_FROM = 60000;
 export const FLAT_SHIPPING = 3990;
 
-export function itemKey(item: Pick<CartItem, "productId" | "color" | "size">): string {
-  return `${item.productId}|${item.color}|${item.size}`;
+export function itemKey(item: Pick<CartItem, "productId" | "color" | "size" | "embroideryReference">): string {
+  return `${item.productId}|${item.color}|${item.size}|${item.embroideryReference ?? ""}`;
 }
 
 export function cartTotals(lines: Pick<CartLine, "lineTotal" | "quantity">[]) {
@@ -73,15 +74,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const product = getProductById(item.productId);
     if (!product) return;
     const stock = variantStock(product, item.color, item.size);
+    const embroideryReference = item.embroideryReference?.trim();
+    if (product.embroidery && !embroideryReference) return;
+    const normalizedItem: CartItem = {
+      productId: item.productId,
+      color: item.color,
+      size: item.size,
+      quantity: item.quantity,
+      ...(product.embroidery && embroideryReference ? { embroideryReference } : {}),
+    };
     setItems((prev) => {
-      const key = itemKey(item);
+      const key = itemKey(normalizedItem);
       const existing = prev.find((p) => itemKey(p) === key);
       if (existing) {
         return prev.map((p) =>
           itemKey(p) === key ? { ...p, quantity: Math.min(stock, p.quantity + item.quantity) } : p,
         );
       }
-      return [...prev, { ...item, quantity: Math.min(stock, item.quantity) }];
+      return [...prev, { ...normalizedItem, quantity: Math.min(stock, item.quantity) }];
     });
   }, []);
 

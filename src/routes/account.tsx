@@ -92,6 +92,14 @@ function Account() {
                                   {i.quantity} × {i.name}
                                 </span>
                                 <span className="mt-0.5 block text-muted-foreground">{i.variant}</span>
+                                {i.embroidery && (
+                                  <span className="mt-1 block text-xs">
+                                    Bordado: {i.embroidery.reference}
+                                    <span className="block text-muted-foreground">
+                                      {i.embroidery.position} · {i.embroidery.size}
+                                    </span>
+                                  </span>
+                                )}
                               </span>
                               <span className="shrink-0">{formatPrice(i.price * i.quantity)}</span>
                             </li>

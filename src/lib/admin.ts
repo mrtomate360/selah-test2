@@ -60,7 +60,13 @@ export function filterOrders(
   return orders.filter(
     (o) =>
       (filter.status === "all" || o.status === filter.status) &&
-      matchesQuery(filter.query, o.id, o.customer, o.email, o.items.map((i) => i.name).join(" ")),
+      matchesQuery(
+        filter.query,
+        o.id,
+        o.customer,
+        o.email,
+        o.items.map((i) => `${i.name} ${i.embroidery?.reference ?? ""}`).join(" "),
+      ),
   );
 }
 

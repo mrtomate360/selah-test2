@@ -76,6 +76,14 @@ function Checkout() {
                   <span className="block text-xs text-muted-foreground">
                     {l.color} · {l.size}
                   </span>
+                  {l.embroideryReference && l.product.embroidery && (
+                    <span className="mt-1 block text-xs">
+                      Bordado: {l.embroideryReference}
+                      <span className="block text-muted-foreground">
+                        {l.product.embroidery.position} · {l.product.embroidery.size}
+                      </span>
+                    </span>
+                  )}
                 </span>
                 <span>{formatPrice(l.lineTotal)}</span>
               </li>

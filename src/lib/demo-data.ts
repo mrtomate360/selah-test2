@@ -15,12 +15,21 @@ export const STATUS_LABEL: Record<OrderStatus, string> = {
   cancelled: "Cancelado",
 };
 
+export interface DemoOrderItem {
+  productId: string;
+  name: string;
+  variant: string;
+  quantity: number;
+  price: number;
+  embroidery?: { reference: string; position: string; size: string };
+}
+
 export interface DemoOrder {
   id: string;
   customer: string;
   email: string;
   date: string;
-  items: { productId: string; name: string; variant: string; quantity: number; price: number }[];
+  items: DemoOrderItem[];
   total: number;
   status: OrderStatus;
   /** Date each status was reached (ISO). Statuses not reached yet are absent. */
@@ -44,10 +53,17 @@ export const DEMO_ORDERS: DemoOrder[] = [
     email: "clienta.demo@example.com",
     date: "2026-11-18",
     items: [
-      { productId: "p-hoodie", name: "Hoodie Oversize Quietud", variant: "Marfil / M", quantity: 1, price: 54990 },
+      {
+        productId: "p-hoodie-back",
+        name: "Hoodie Oversize Tu Versículo",
+        variant: "Marfil / M",
+        quantity: 1,
+        price: 56990,
+        embroidery: { reference: "Salmo 23:1-6", position: "Espalda", size: "Grande" },
+      },
       { productId: "p-tote", name: "Bolso Tote Pan de Cada Día", variant: "Natural", quantity: 1, price: 14990 },
     ],
-    total: 69980,
+    total: 71980,
     status: "shipped",
     history: { pending: "2026-11-18", paid: "2026-11-18", shipped: "2026-11-20" },
   },
@@ -94,7 +110,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
 ];
 
 export const DEMO_CUSTOMERS: DemoCustomer[] = [
-  { id: "c1", name: "Clienta Demo", email: "clienta.demo@example.com", city: "Santiago", orders: 2, spent: 118960, joined: "2026-09-30" },
+  { id: "c1", name: "Clienta Demo", email: "clienta.demo@example.com", city: "Santiago", orders: 2, spent: 120960, joined: "2026-09-30" },
   { id: "c2", name: "Comprador de Ejemplo", email: "comprador.ejemplo@example.com", city: "Valparaíso", orders: 1, spent: 53970, joined: "2026-11-01" },
   { id: "c3", name: "Compradora de Prueba", email: "compradora.prueba@example.com", city: "Concepción", orders: 1, spent: 23980, joined: "2026-10-20" },
   { id: "c4", name: "Persona de Ejemplo", email: "persona.ejemplo@example.com", city: "La Serena", orders: 1, spent: 0, joined: "2026-10-10" },

@@ -8,6 +8,7 @@ import sweatshirtWorn from "@/assets/sweatshirt-worn.jpg";
 import tee from "@/assets/tee.jpg";
 import teeWorn from "@/assets/tee-worn.jpg";
 import tote from "@/assets/tote.jpg";
+import type { EmbroideryConfig } from "@/lib/embroidery";
 
 /**
  * DEMO CATALOG — sample products, prices and stock used until the store's
@@ -50,6 +51,7 @@ export interface Product {
   bestSeller: boolean;
   isNew: boolean;
   createdAt: string;
+  embroidery?: EmbroideryConfig;
 }
 
 export const CATEGORIES: Category[] = [
@@ -245,6 +247,100 @@ export const PRODUCTS: Product[] = [
     bestSeller: false,
     isNew: false,
     createdAt: "2026-07-15",
+  },
+  {
+    id: "p-hoodie-back",
+    slug: "hoodie-oversize-tu-versiculo",
+    name: "Hoodie Oversize Tu Versículo",
+    category: "hoodies",
+    price: 56990,
+    tagline: "Tu referencia bordada en grande en la espalda",
+    description:
+      "Nuestro hoodie oversize de algodón grueso, ahora con la referencia bíblica que tú elijas bordada en grande en la espalda. Una prenda única, hecha para llevar contigo un pasaje significativo.",
+    details: [
+      "Referencia personalizada bordada en la espalda",
+      "Bordado grande, incluido en el precio",
+      "Felpa de algodón perchado, 420 g/m²",
+      "Corte oversize, hombro caído",
+    ],
+    images: [hoodieWorn, hoodie, embroidery],
+    colors: hoodieColors,
+    sizes: APPAREL,
+    variants: variants(hoodieColors, APPAREL, [
+      [3, 8, 10, 6, 2],
+      [2, 5, 7, 4, 1],
+    ]),
+    bestSeller: false,
+    isNew: true,
+    createdAt: "2026-11-26",
+    embroidery: {
+      position: "Espalda",
+      size: "Grande",
+      defaultSelection: { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6 },
+    },
+  },
+  {
+    id: "p-tee-chest",
+    slug: "polera-tu-versiculo-en-el-pecho",
+    name: "Polera Tu Versículo en el Pecho",
+    category: "t-shirts",
+    price: 26990,
+    tagline: "Una referencia pequeña, cerca del corazón",
+    description:
+      "Una polera relajada de algodón con tu referencia bíblica bordada en pequeño en el pecho. Elige el libro, capítulo y versículos que quieres llevar todos los días.",
+    details: [
+      "Referencia personalizada bordada en el pecho",
+      "Bordado pequeño, incluido en el precio",
+      "Jersey de algodón peinado, 200 g/m²",
+      "Corte relajado",
+    ],
+    images: [teeWorn, tee, embroidery],
+    colors: teeColors,
+    sizes: APPAREL,
+    variants: variants(teeColors, APPAREL, [
+      [5, 10, 12, 8, 3],
+      [4, 7, 9, 5, 2],
+      [2, 4, 6, 3, 1],
+    ]),
+    bestSeller: false,
+    isNew: true,
+    createdAt: "2026-11-26",
+    embroidery: {
+      position: "Pecho",
+      size: "Pequeño",
+      defaultSelection: { book: "Filipenses", chapter: 4, fromVerse: 13, toVerse: 13 },
+    },
+  },
+  {
+    id: "p-sweatshirt-sleeve",
+    slug: "poleron-tu-versiculo-en-la-manga",
+    name: "Polerón Tu Versículo en la Manga",
+    category: "sweatshirts",
+    price: 46990,
+    tagline: "Tu referencia bordada discretamente en la manga",
+    description:
+      "Un polerón de cuello redondo con tu referencia bíblica favorita bordada en pequeño en la manga derecha. Un detalle discreto con un significado muy personal.",
+    details: [
+      "Referencia personalizada bordada en la manga derecha",
+      "Bordado pequeño, incluido en el precio",
+      "Algodón french terry, 360 g/m²",
+      "Corte regular, terminaciones en rib",
+    ],
+    images: [sweatshirtWorn, sweatshirt, embroidery],
+    colors: sweatColors,
+    sizes: APPAREL,
+    variants: variants(sweatColors, APPAREL, [
+      [4, 8, 9, 5, 2],
+      [3, 6, 8, 4, 1],
+    ]),
+    bestSeller: false,
+    isNew: true,
+    createdAt: "2026-11-26",
+    embroidery: {
+      position: "Manga derecha",
+      size: "Pequeño",
+      defaultSelection: { book: "Josué", chapter: 1, fromVerse: 9, toVerse: 9 },
+    },
   },
 ];
 

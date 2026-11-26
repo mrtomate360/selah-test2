@@ -3,9 +3,11 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { EmbroideryCustomizer } from "@/components/EmbroideryCustomizer";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
 import { categoryName, formatPrice, getProduct, PRODUCTS, variantStock } from "@/lib/catalog";
+import { formatReference, isValidSelection, type EmbroiderySelection } from "@/lib/embroidery";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/shop/$slug")({
@@ -52,8 +54,13 @@ function ProductView({ slug }: { slug: string }) {
   const firstAvailable = product.sizes.find((s) => variantStock(product, color, s) > 0);
   const [size, setSize] = useState(product.sizes.length === 1 ? (product.sizes[0] ?? "") : "");
   const [qty, setQty] = useState(1);
+  const [selection, setSelection] = useState<EmbroiderySelection>(
+    () => product.embroidery?.defaultSelection ?? { book: "Salmos", chapter: 23, fromVerse: 1, toVerse: 6 },
+  );
 
   const stock = size ? variantStock(product, color, size) : 0;
+  const embroideryValid = !product.embroidery || isValidSelection(selection);
+  const embroideryReference = product.embroidery && embroideryValid ? formatReference(selection) : undefined;
   const colorSoldOut = !firstAvailable;
   const related = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
 
@@ -64,9 +71,17 @@ function ProductView({ slug }: { slug: string }) {
   };
 
   const addToBag = () => {
-    if (!size || stock === 0) return;
-    add({ productId: product.id, color, size, quantity: Math.min(qty, stock) });
-    toast.success("Agregado a tu bolsa", { description: `${product.name} · ${color} · ${size}` });
+    if (!size || stock === 0 || !embroideryValid) return;
+    add({
+      productId: product.id,
+      color,
+      size,
+      quantity: Math.min(qty, stock),
+      ...(embroideryReference ? { embroideryReference } : {}),
+    });
+    toast.success("Agregado a tu bolsa", {
+      description: `${product.name} · ${color} · ${size}${embroideryReference ? ` · ${embroideryReference}` : ""}`,
+    });
   };
 
   let stockLabel = "Elige una talla para ver disponibilidad";
@@ -161,6 +176,10 @@ function ProductView({ slug }: { slug: string }) {
             </p>
           </div>
 
+          {product.embroidery && (
+            <EmbroideryCustomizer config={product.embroidery} value={selection} onChange={setSelection} />
+          )}
+
           <div className="mt-8 flex gap-3">
             <div className="flex items-center border border-input">
               <button type="button" className="grid size-12 place-items-center" aria-label="Menos" onClick={() => setQty((q) => Math.max(1, q - 1))}>
@@ -177,8 +196,19 @@ function ProductView({ slug }: { slug: string }) {
                 <Plus className="size-3.5" />
               </button>
             </div>
-            <button type="button" className="btn btn-solid flex-1" disabled={!size || stock === 0} onClick={addToBag}>
-              {colorSoldOut ? "Agotado" : size ? "Agregar a la bolsa" : "Elige tu talla"}
+            <button
+              type="button"
+              className="btn btn-solid flex-1"
+              disabled={!size || stock === 0 || !embroideryValid}
+              onClick={addToBag}
+            >
+              {colorSoldOut
+                ? "Agotado"
+                : !embroideryValid
+                  ? "Completa tu referencia"
+                  : size
+                    ? "Agregar a la bolsa"
+                    : "Elige tu talla"}
             </button>
           </div>
 

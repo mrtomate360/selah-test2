@@ -196,6 +196,7 @@ function Admin() {
       bestSeller: existing?.bestSeller ?? false,
       isNew: existing?.isNew ?? true,
       createdAt: existing?.createdAt ?? new Date().toISOString().slice(0, 10),
+      ...(existing?.embroidery ? { embroidery: existing.embroidery } : {}),
     };
     setProducts((prev) =>
       existing ? prev.map((p) => (p.id === product.id ? product : p)) : [product, ...prev],
@@ -425,8 +426,24 @@ function Admin() {
                       <span className="block text-xs text-muted-foreground">{o.email}</span>
                     </td>
                     <td className="py-4">{formatDate(o.date)}</td>
-                    <td className="py-4 text-muted-foreground">
-                      {o.items.map((i) => `${i.quantity} × ${i.name}`).join(", ")}
+                    <td className="min-w-64 py-4 text-muted-foreground">
+                      <div className="space-y-4">
+                        {o.items.map((i) => (
+                          <div key={`${i.productId}-${i.name}`}>
+                            <p className="text-foreground">{i.quantity} × {i.name}</p>
+                            <p className="mt-0.5 text-xs">{i.variant}</p>
+                            {i.embroidery && (
+                              <div className="mt-2 border-l-2 border-primary pl-3">
+                                <p className="eyebrow text-[0.5rem] text-muted-foreground">Bordado solicitado</p>
+                                <p className="mt-1 font-medium text-foreground">{i.embroidery.reference}</p>
+                                <p className="mt-0.5 text-xs">
+                                  {i.embroidery.position} · {i.embroidery.size}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </td>
                     <td className="py-4">{formatPrice(o.total)}</td>
                     <td className="py-4">

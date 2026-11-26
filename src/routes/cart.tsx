@@ -45,6 +45,14 @@ function CartPage() {
                     <p className="mt-1 text-sm text-muted-foreground">
                       {line.color} · {line.size}
                     </p>
+                    {line.embroideryReference && line.product.embroidery && (
+                      <div className="mt-3 border-l-2 border-primary pl-3 text-sm">
+                        <p className="font-medium">Bordado: {line.embroideryReference}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {line.product.embroidery.position} · {line.product.embroidery.size}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <button type="button" onClick={() => remove(line.key)} aria-label={`Quitar ${line.product.name}`} className="-mr-2 -mt-1 p-2">
                     <X className="size-4" strokeWidth={1.25} />
